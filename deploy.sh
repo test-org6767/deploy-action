@@ -192,16 +192,16 @@ echo "[INFO] Starting new container..."
 eval "\$DOCKER_CMD \${IMAGE_NAME}"
 
 sleep 3
-if docker ps --format '{{{{.Names}}}}' | grep -q "^\${CONTAINER_NAME}\$"; then
+if docker ps --format '{{.Names}}' | grep -q "^\${CONTAINER_NAME}\$"; then
     echo "[INFO] Container \${CONTAINER_NAME} started successfully!"
 
     echo ""
     echo "=== Container Status ==="
-    docker ps --filter "name=\${CONTAINER_NAME}" --format "table {{{.Names}}}\t{{{.Status}}}\t{{{.Ports}}}"
+    docker ps --filter "name=\${CONTAINER_NAME}" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
     echo ""
     echo "[INFO] Cleaning up old images (keeping last 3)..."
-    docker images "\${REPO_NAME}" --format "{{{{.ID}}}" | tail -n +4 | xargs -r docker rmi -f || true
+    docker images "\${REPO_NAME}" --format "{{.ID}}" | tail -n +4 | xargs -r docker rmi -f || true
 
     exit 0
 else
