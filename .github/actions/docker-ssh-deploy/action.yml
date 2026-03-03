@@ -1,0 +1,42 @@
+name: 'Docker SSH Deploy'
+description: 'Deploy a Dockerized application to a remote server via SSH. Automatically clones the repo, builds the Docker image, and runs the container based on deploy.yaml configuration.'
+
+inputs:
+  host:
+    description: 'Server hostname or IP address'
+    required: true
+  ssh-user:
+    description: 'SSH user (default: root)'
+    required: false
+    default: 'root'
+  ssh-key:
+    description: 'SSH private key for authentication'
+    required: true
+  github-token:
+    description: 'GitHub token for private repository access (optional, uses GITHUB_TOKEN by default)'
+    required: false
+    default: ${{ github.token }}
+  branch:
+    description: 'Git branch to deploy (default: current branch)'
+    required: false
+
+outputs:
+  status:
+    description: 'Deployment status (success/failed)'
+    value: ${{ steps.deploy.outputs.status }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Deploy via SSH
+      id: deploy
+      shell: bash
+      env:
+        HOST: ${{ inputs.host }}
+        SSH_USER: ${{ inputs.ssh-user }}
+        SSH_KEY: ${{ inputs.ssh-key }}
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_REF: ${{ inputs.branch || github.ref }}
+      run: |
+        ${{ github.action_path }}/deploy.sh
