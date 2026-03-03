@@ -116,7 +116,7 @@ docker build -t "\${IMAGE_NAME}" "\${DEPLOY_DIR}"
 
 stop_container() {
     local container="\$1"
-    if docker ps -a --format '{{{{.Names}}}}' | grep -q "^\${container}\$"; then
+    if docker ps -a --format '{{.Names}}' | grep -q "^\${container}\$"; then
         echo "[INFO] Stopping existing container: \${container}"
         docker stop "\${container}" || true
         docker rm "\${container}" || true
